@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js';
 import './App.css';
+
+import Player from './player.js';
 
 import playerSprite from './ressources/player.png';
 import tile0 from './ressources/tile0.png';
@@ -8,7 +10,7 @@ import tile0 from './ressources/tile0.png';
 const app = new PIXI.Application();
 
 let state;
-let player = {};
+let player;
 let keys;
 let loadedBoard = {};
 
@@ -21,7 +23,6 @@ let board =[[0,0,0,0,0],
 class App extends Component {
   constructor(props) {
     super(props);
-
 
   }
 
@@ -41,7 +42,8 @@ class App extends Component {
     PIXI.loader .add('player', playerSprite)
                 .add('tile0', tile0)
                 .load((loader, resources) => {
-      player.pixi = new PIXI.Sprite(resources.player.texture);
+
+      player = new Player(resources,'player');
 
       loadedBoard.pixi = new PIXI.Container();
       loadedBoard.pixi.position.x = 0;
@@ -59,39 +61,30 @@ class App extends Component {
       }
 
       // Setup the position
-      player.pixi.x = app.renderer.width / 2;
-      player.pixi.y = app.renderer.height / 2;
-      player.vx = 0;
-      player.vy = 0;
-      player.x = 250;
-      player.y = 250;
-
-      // Rotate around the center
-      player.pixi.anchor.x = 0.5;
-      player.pixi.anchor.y = 0.5;
+      player.pixiPosition = {x:app.renderer.width / 2,y:app.renderer.height / 2};
 
       // Add to the scene
       app.stage.addChild(loadedBoard.pixi);
-      app.stage.addChild(player.pixi);
+      app.stage.addChild(player.pixiInstance);
 
 
       keys = {};
 
       keys.right = this.keyboard(39);
-      keys.right.press = () => {player.vx +=5};
-      keys.right.release  = () => {player.vx -=5};
+      keys.right.press =    () => {player.speedChange({x: 5,y: 0})};
+      keys.right.release  = () => {player.speedChange({x:-5,y: 0})};
 
       keys.left = this.keyboard(37);
-      keys.left.press = () => {player.vx -=5};
-      keys.left.release  = () => {player.vx +=5};
+      keys.left.press =     () => {player.speedChange({x:-5,y: 0})};
+      keys.left.release  =  () => {player.speedChange({x: 5,y: 0})};
 
       keys.down = this.keyboard(40);
-      keys.down.press = () => {player.vy +=5};
-      keys.down.release  = () => {player.vy -=5};
+      keys.down.press =     () => {player.speedChange({x: 0,y: 5})};
+      keys.down.release  =  () => {player.speedChange({x: 0,y:-5})};
 
       keys.up = this.keyboard(38);
-      keys.up.press = () => {player.vy -=5};
-      keys.up.release  = () => {player.vy +=5};
+      keys.up.press =       () => {player.speedChange({x: 0,y:-5})};
+      keys.up.release  =    () => {player.speedChange({x: 0,y: 5})};
 
       // Listen for frame updates
       app.ticker.add(delta => this.gameLoop(delta));
@@ -99,17 +92,17 @@ class App extends Component {
   }
 
   gameLoop = (delta) => {
-    if(0 <= player.x + (player.vx * delta) && player.x + (player.vx * delta) <= 500)player.x += player.vx * delta;
-    if(0 <= player.y + (player.vy * delta) && player.y + (player.vy * delta) <= 500)player.y += player.vy * delta;
-
-    loadedBoard.pixi.x = player.pixi.x - player.x;
-    loadedBoard.pixi.y = player.pixi.y - player.y;
+    let mainPlayerPos = player.position, mainPlayerPixiPos = player.pixiPosition;
+    loadedBoard.pixi.x = mainPlayerPixiPos.x - mainPlayerPos.x;
+    loadedBoard.pixi.y = mainPlayerPixiPos.y - mainPlayerPos.y;
 
     let dx = app.renderer.plugins.interaction.mouse.global.x - app.renderer.width / 2;
     let dy = app.renderer.plugins.interaction.mouse.global.y - app.renderer.height / 2;
     let theta = Math.atan2(dy, dx);
 
-    player.pixi.rotation = theta;
+    player.rotation = theta;
+
+    player.update(delta);
   }
 
   keyboard = (keyCode) => {
