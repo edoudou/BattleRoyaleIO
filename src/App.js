@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as PIXI from 'pixi.js'
 import './App.css';
 
+import Client from "./network/Client.js";
 import Map from "./core/Map.js";
 import Character from "./core/Character.js";
 import Input from "./core/Input.js";
@@ -14,6 +15,7 @@ const board = require("./config/board.js");
 let player;
 let bot;
 let map;
+let network;
 
 let bot_input = new BotInput();
 
@@ -36,6 +38,7 @@ class App extends Component {
         app.renderer.autoResize = true;
         app.renderer.resize(window.innerWidth, window.innerHeight);
         
+        network = new Client();
         map = new Map(app);
         player = new Character(app.stage, true);
         bot = new Character(app.stage);
@@ -67,6 +70,8 @@ class App extends Component {
 
         bot.loop(delta);
         player.loop(delta);
+
+        network.update(player.position.x, player.position.y);
         
         //let dx = app.renderer.plugins.interaction.mouse.global.x - app.renderer.width / 2;
         //let dy = app.renderer.plugins.interaction.mouse.global.y - app.renderer.height / 2;
