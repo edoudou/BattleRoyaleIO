@@ -6,24 +6,26 @@ import Map from "./core/Map.js";
 import Character from "./core/Character.js";
 import Input from "./core/Input.js";
 import KeyboardInput from "./input/KeyboardInput.js";
+import BotInput from './input/BotInput';
 
 const app = new PIXI.Application();
 const board = require("./config/board.js");
 
 let player;
+let bot;
 let map;
+
+let bot_input = new BotInput();
 
 class App extends Component {
     constructor(props) {
         super(props);
-        
-        
     }
     
     render() {
         return (
             <div className="App">
-            <div ref="game"></div>
+                <div ref="game"></div>
             </div>
         );
     }
@@ -36,10 +38,12 @@ class App extends Component {
         
         map = new Map(app);
         player = new Character(app.stage, true);
+        bot = new Character(app.stage);
         let k = new KeyboardInput();
 
         map.setTiles(board);
         player.setInput(k);
+        bot.setInput(bot_input);
         
         PIXI.loader
             .add(map.getTileset())
@@ -47,6 +51,7 @@ class App extends Component {
             .load(function(loader, resources) {
                 map.setup();
                 player.setup();
+                bot.setup();
             });
         
         
@@ -58,6 +63,9 @@ class App extends Component {
     }
     
     gameLoop = (delta) => {
+        bot_input.loop(delta);
+
+        bot.loop(delta);
         player.loop(delta);
         
         //let dx = app.renderer.plugins.interaction.mouse.global.x - app.renderer.width / 2;
@@ -65,43 +73,6 @@ class App extends Component {
         //let theta = Math.atan2(dy, dx);
         
         //player.pixi.rotation = theta;
-    }
-    
-    keyboard = (keyCode) => {
-        let key = {};
-        key.code = keyCode;
-        key.isDown = false;
-        key.isUp = true;
-        key.press = undefined;
-        key.release = undefined;
-        //The `downHandler`
-        key.downHandler = event => {
-            if (event.keyCode === key.code) {
-                if (key.isUp && key.press) key.press();
-                key.isDown = true;
-                key.isUp = false;
-            }
-            event.preventDefault();
-        };
-        
-        //The `upHandler`
-        key.upHandler = event => {
-            if (event.keyCode === key.code) {
-                if (key.isDown && key.release) key.release();
-                key.isDown = false;
-                key.isUp = true;
-            }
-            event.preventDefault();
-        };
-        
-        //Attach event listeners
-        window.addEventListener(
-            "keydown", key.downHandler.bind(key), false
-        );
-        window.addEventListener(
-            "keyup", key.upHandler.bind(key), false
-        );
-        return key;
     }
 }
 

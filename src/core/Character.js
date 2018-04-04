@@ -28,7 +28,7 @@ class Character {
     }
 
     setup() {
-        this.texture = PIXI.TextureCache[tileset];
+        this.texture = new PIXI.Texture(PIXI.TextureCache[tileset]);
         let rectangle = new PIXI.Rectangle(0, 0, this.sprite.width, this.sprite.height);
 
         this.texture.frame = rectangle;
@@ -46,21 +46,19 @@ class Character {
         if (!(input instanceof Input))
             return;
 
-        const _this = this;
-
         this.input = input;
 
-        input.bind("UP_PRESS", () => { _this.speed.y -= 5; });
-        input.bind("UP_RELEASE", () => { _this.speed.y += 5; });
+        input.bind("UP_PRESS", (context) => { this.speed.y -= 5; });
+        input.bind("UP_RELEASE", (context) => { this.speed.y += 5; });
 
-        input.bind("DOWN_PRESS", () => { _this.speed.y += 5; });
-        input.bind("DOWN_RELEASE", () => { _this.speed.y -= 5; });
+        input.bind("DOWN_PRESS", (context) => { this.speed.y += 5; });
+        input.bind("DOWN_RELEASE", (context) => { this.speed.y -= 5; });
 
-        input.bind("LEFT_PRESS", () => { _this.speed.x += 5; });
-        input.bind("LEFT_RELEASE", () => { _this.speed.x -= 5; });
+        input.bind("LEFT_PRESS", (context) => { this.speed.x += 5; });
+        input.bind("LEFT_RELEASE", (context) => { this.speed.x -= 5; });
 
-        input.bind("RIGHT_PRESS", () => { _this.speed.x -= 5; });
-        input.bind("RIGHT_RELEASE", () => { _this.speed.x += 5; });
+        input.bind("RIGHT_PRESS", (context) => { this.speed.x -= 5; });
+        input.bind("RIGHT_RELEASE", (context) => { this.speed.x += 5; });
     }
 
     loop(delta) {
