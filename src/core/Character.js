@@ -9,6 +9,7 @@ class Character {
     anchor = {x: 0.5, y: 0.5};
     size = {width: this.sprite.width, height: this.sprite.height };
     direction = 0;
+    mainCamera = false;
 
     update_display = 0;
 
@@ -17,8 +18,9 @@ class Character {
     max_pos = 4;
     // [END]
 
-    constructor(camera) {
+    constructor(camera, mainCamera = false) {
         this.camera = camera;
+        this.mainCamera = mainCamera;
     }
 
     getTileset() {
@@ -85,8 +87,10 @@ class Character {
         this.display.x = this.position.x;
         this.display.y = this.position.y;
 
-        this.camera.pivot.x = this.position.x - window.innerWidth/2;
-        this.camera.pivot.y = this.position.y - window.innerHeight/2;
+        if (this.mainCamera) {
+            this.camera.pivot.x = this.position.x - window.innerWidth/2;
+            this.camera.pivot.y = this.position.y - window.innerHeight/2;
+        }
     }
 
     updateDirection() {

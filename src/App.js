@@ -8,27 +8,10 @@ import Input from "./core/Input.js";
 import KeyboardInput from "./input/KeyboardInput.js";
 
 const app = new PIXI.Application();
+const board = require("./config/board.js");
 
 let player;
 let map;
-
-let board =[
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-];
 
 class App extends Component {
     constructor(props) {
@@ -52,7 +35,7 @@ class App extends Component {
         app.renderer.resize(window.innerWidth, window.innerHeight);
         
         map = new Map(app);
-        player = new Character(app.stage);
+        player = new Character(app.stage, true);
         let k = new KeyboardInput();
 
         map.setTiles(board);
