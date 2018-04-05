@@ -1,5 +1,10 @@
 class Input {
-    callbacks = [];
+    callbacks = {};
+    character = null;
+
+    constructor(character) {
+        this.character = character;
+    }
 
     bind(name, callback, parameters) {
         if (typeof callback !== "function")
@@ -11,11 +16,14 @@ class Input {
         };
     }
 
-    trigger(name) {
+    trigger(name, parameters = null) {
         if(!(name in this.callbacks))
             return;
 
-        this.callbacks[name].callback(this.callbacks[name].parameters);
+        if (parameters == null)
+            this.callbacks[name].callback(this.callbacks[name].parameters);
+        else
+            this.callbacks[name].callback(parameters);
     }
 }
 

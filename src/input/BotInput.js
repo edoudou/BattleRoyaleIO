@@ -1,4 +1,3 @@
-import * as PIXI from 'pixi.js'
 import Input from "../core/Input.js";
 
 class BotInput extends Input {
@@ -6,8 +5,17 @@ class BotInput extends Input {
     memory = -1;
     directions = ["UP", "RIGHT", "DOWN", "LEFT"];
 
-    constructor() {
-        super();
+    constructor(character) {
+        super(character);
+
+        this.bind("RIGHT_PRESS", () => { this.character.speed.x -= 5; });
+        this.bind("RIGHT_RELEASE", () => { this.character.speed.x += 5; });
+        this.bind("LEFT_PRESS", () => { this.character.speed.x += 5; });
+        this.bind("LEFT_RELEASE", () => { this.character.speed.x -= 5; });
+        this.bind("DOWN_PRESS", () => { this.character.speed.y += 5; });
+        this.bind("DOWN_RELEASE", () => { this.character.speed.y -= 5; });
+        this.bind("UP_PRESS", () => { this.character.speed.y -= 5; });
+        this.bind("UP_RELEASE", () => { this.character.speed.y += 5; });
     }
 
     loop(delta) {

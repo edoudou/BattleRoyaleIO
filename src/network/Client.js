@@ -11,6 +11,8 @@ class Client {
     socket = null;
     ID = null;
     updates = {};
+    online = 0;
+    events = {};
 
     constructor(host = "localhost", port = 8000) {
         this.port = port;
@@ -22,7 +24,14 @@ class Client {
 
         this.socket.on('serverUpdate', (updates) => { 
             this.updates = updates;
-            console.log(this.updates);
+            delete this.updates[this.ID];
+            
+            let online = Object.keys(this.updates).length;
+            if (online > this.online)
+                this.trigger("new_connection");
+            else if (online < this.online)
+                this.trigger("disconnection");
+            this.online = online;
         });
         
         this.socket.emit('subscribeToUpdate', 1000);
@@ -32,5 +41,22 @@ class Client {
         this.socket.emit('clientUpdate', this.ID, {x: x, y: y});
     }
 
+    bind(event_name, callback, parameters = null) {
+        this.events[event_name] = {
+            callback: callback,
+            parameters: parameters
+        };
+    }
+
+    trigger(event_name) {
+        if (!(event_name in this.events))
+            return;
+
+        this.events[event_name].callback(this.events[event_name].parameters);
+    }
+
+    get playerIDs() {
+        return Object.keys(this.updates);
+    }
 }
 export default Client;

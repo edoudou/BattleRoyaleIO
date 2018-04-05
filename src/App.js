@@ -2,22 +2,24 @@ import React, { Component } from 'react';
 import * as PIXI from 'pixi.js'
 import './App.css';
 
-import Client from "./network/Client.js";
-import Map from "./core/Map.js";
-import Character from "./core/Character.js";
-import Input from "./core/Input.js";
-import KeyboardInput from "./input/KeyboardInput.js";
+import Client from "./network/Client";
+import Map from "./core/Map";
+import Character from "./core/Character";
+import Input from "./core/Input";
+import KeyboardInput from "./input/KeyboardInput";
 import BotInput from './input/BotInput';
+import NetworkInput from './input/NetworkInput';
 
 const app = new PIXI.Application();
 const board = require("./config/board.js");
 
 let player;
+let player2;
 let bot;
 let map;
 let network;
-
-let bot_input = new BotInput();
+let network_input;
+let bot_input;
 
 class App extends Component {
     constructor(props) {
@@ -42,11 +44,19 @@ class App extends Component {
         map = new Map(app);
         player = new Character(app.stage, true);
         bot = new Character(app.stage);
-        let k = new KeyboardInput();
+
+        network_input = new NetworkInput();
+        bot_input = new BotInput(bot);
+        let k = new KeyboardInput(player);
 
         map.setTiles(board);
-        player.setInput(k);
-        bot.setInput(bot_input);
+        network.bind("new_connection", () => {
+            let char = new Character(app.stage);
+            let ids = network.playerIDs;
+
+            char.setup();
+            network_input.add(ids[ids.length-1], char);
+        });
         
         PIXI.loader
             .add(map.getTileset())
@@ -72,6 +82,8 @@ class App extends Component {
         player.loop(delta);
 
         network.update(player.position.x, player.position.y);
+        network_input.update(network.updates);
+        network_input.loop(delta);
         
         //let dx = app.renderer.plugins.interaction.mouse.global.x - app.renderer.width / 2;
         //let dy = app.renderer.plugins.interaction.mouse.global.y - app.renderer.height / 2;

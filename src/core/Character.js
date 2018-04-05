@@ -42,25 +42,6 @@ class Character {
         
     }
 
-    setInput(input) {
-        if (!(input instanceof Input))
-            return;
-
-        this.input = input;
-
-        input.bind("UP_PRESS", (context) => { this.speed.y -= 5; });
-        input.bind("UP_RELEASE", (context) => { this.speed.y += 5; });
-
-        input.bind("DOWN_PRESS", (context) => { this.speed.y += 5; });
-        input.bind("DOWN_RELEASE", (context) => { this.speed.y -= 5; });
-
-        input.bind("LEFT_PRESS", (context) => { this.speed.x += 5; });
-        input.bind("LEFT_RELEASE", (context) => { this.speed.x -= 5; });
-
-        input.bind("RIGHT_PRESS", (context) => { this.speed.x -= 5; });
-        input.bind("RIGHT_RELEASE", (context) => { this.speed.x += 5; });
-    }
-
     loop(delta) {
         this.position.x += this.speed.x * delta;
         this.position.y += this.speed.y * delta;
